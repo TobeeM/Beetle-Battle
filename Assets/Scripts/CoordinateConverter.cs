@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
-public class CoordinateConverter : MonoBehaviour
+public static class CoordinateConverter
 {
-    private Dictionary<(int, int), int> _unityToArrayCoordinates;
+    private static Dictionary<(int, int), int> _unityToArrayCoordinates;
 
-    void Awake()
+    static CoordinateConverter()
     {
         _unityToArrayCoordinates = new Dictionary<(int, int), int>() {
             // 1 ряд
@@ -55,7 +55,7 @@ public class CoordinateConverter : MonoBehaviour
         };
     }
 
-    public int ConvertCoordinates(int x, int z) {
+    public static int ConvertCoordinates(int x, int z) {
         return _unityToArrayCoordinates[(x, z)];
     }
 }

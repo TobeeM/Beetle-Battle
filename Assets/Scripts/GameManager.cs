@@ -3,15 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject board;
-    private GameObject[] gameBoard;
+    public static GameManager Instance;
+    public GameState State;
+    public static event Action<GameState> OnGameStateChanged;
 
-    void Start()
-    {
-        gameBoard = new GameObject[35];
-        // cells = GameObject.FindGameObjectsWithTag("cell");
+    void Awake() {
+        if (Instance != null && Instance != this) Destroy(this);
+        else Instance = this; 
     }
+
+    void Start() {
+        UpdateGameState(GameState.PlayerTurn);
+    }
+
+    public void UpdateGameState(GameState newState) {
+        State = newState;
+
+        switch (newState) {
+            case GameState.PlayerTurn:
+                break;
+            case GameState.EnemyTurn:
+                break;
+        }
+
+        OnGameStateChanged?.Invoke(newState);
+    }
+}
+
+public enum GameState {
+    PlayerTurn,
+    EnemyTurn
 }

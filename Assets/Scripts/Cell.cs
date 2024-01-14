@@ -6,14 +6,16 @@ using UnityEngine;
 public class Cell : MonoBehaviour
 {
     [SerializeField] private CellType _type;
-    private int _number;
-
+    private bool _isOccupied;
     public CellType Type => _type;
-    public int Number => _number;
+    public bool IsOccupied => _isOccupied;
 
-    void Start()
-    {
-        _number = int.Parse(transform.name);
+    public void Occupy() {
+        _isOccupied = true;
+    }
+
+    public void Deoccupy() {
+        _isOccupied = false;
     }
 }
 

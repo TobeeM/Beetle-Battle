@@ -6,6 +6,7 @@ TagManager:
   tags:
   - unit
   - cell
+  - boardManager
   layers:
   - Default
   - TransparentFX

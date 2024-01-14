@@ -10,8 +10,8 @@ public class CellHightlight : MonoBehaviour
 
     void Awake()
     {
-        _material = transform.GetComponent<Renderer>().material;
-        _defaultColor = transform.GetComponent<Renderer>().material.color;
+        _material = GetComponent<Renderer>().material;
+        _defaultColor = GetComponent<Renderer>().material.color;
     }
 
     /*
@@ -30,5 +30,9 @@ public class CellHightlight : MonoBehaviour
 
     public void PaintCellToOriginalColor() {
         _material.SetColor("_Color", _defaultColor);
+    }
+
+    public void DebugPaint() {
+        _material.SetColor("_Color", Color.blue);
     }
 }

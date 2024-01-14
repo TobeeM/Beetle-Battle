@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
-    [Header("Health and Position")]
+    [Header("Health")]
     [SerializeField] private int _hp; // increases maximum hp pool
 
     [Header("Offensive and Defensive stats")]
@@ -18,19 +18,11 @@ public class Stats : MonoBehaviour
     [SerializeField] private int _durability; // increases chance to dodge SNAIL and CANNON specials (in %)
     [SerializeField] private int _clarity; // increases chance to dodge FAIRY and DRAGONFLY specials (in %)
 
-    public int Hp => _hp;
+    public int Hp {
+        get => _hp;
+        set => _hp = value;
+    }
     public int Atk => _atk;
     public int Def => _def;
     public int Dodge => _dodge;
-
-    public Stats(int hp, int atk, int def, int dodge, int immunity, int fortitude, int durability, int clarity) {
-        this._hp = hp;
-        this._atk = atk;
-        this._def = def;
-        this._dodge = dodge;
-        this._immunity = immunity;
-        this._fortitude = fortitude;
-        this._durability = durability;
-        this._clarity = clarity;
-    }
 }

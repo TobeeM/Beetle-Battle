@@ -1,14 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Movement : MonoBehaviour
 {
     private List<int> _availableMoves = new List<int>();
-    private int _position;
-
-    public int Position => _position;
-
     public List<int> CalculateAvailableMoves(Cell currentCell) {
         _availableMoves.Clear();
         switch (currentCell.Type) {
@@ -43,7 +40,16 @@ public class Movement : MonoBehaviour
         return _availableMoves;
     } 
 
-    public void Move(Cell targetCell) {
-        _position = targetCell.Number;
+    public void Move(Vector3 targetCoords, Cell[] cells) {
+        int unitCoords = CoordinateConverter.ConvertCoordinates((int)transform.position.x, (int)transform.position.z);
+        int moveTo = CoordinateConverter.ConvertCoordinates((int)targetCoords.x, (int)targetCoords.z);
+        Vector3 moveLocation = new Vector3(targetCoords.x, 3, targetCoords.z);
+
+        foreach (int move in _availableMoves) {
+            int finalMove = unitCoords + move;
+            Cell cell = cells[finalMove];
+            
+            if (finalMove == moveTo && !cell.IsOccupied) transform.position = moveLocation;
+        }
     }
 }
