@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
     [Header("Health")]
-    [SerializeField] private int _hp; // increases maximum hp pool
+    [SerializeField] private int _maxHP; // increases maximum hp pool
+    [SerializeField] private int _hp; // current hp
 
     [Header("Offensive and Defensive stats")]
     [SerializeField] private int _atk; // increases damage done
@@ -18,11 +20,24 @@ public class Stats : MonoBehaviour
     [SerializeField] private int _durability; // increases chance to dodge SNAIL and CANNON specials (in %)
     [SerializeField] private int _clarity; // increases chance to dodge FAIRY and DRAGONFLY specials (in %)
 
+    [Header("Team")]
+    private TeamColor _team;
+
     public int Hp {
         get => _hp;
         set => _hp = value;
     }
+    public int MaxHP => _maxHP;
     public int Atk => _atk;
     public int Def => _def;
     public int Dodge => _dodge;
+    public TeamColor Team {
+        get => _team;
+        set => _team = value;
+    }
+}
+
+public enum TeamColor {
+    Red,
+    Blue
 }

@@ -203,6 +203,7 @@ GameObject:
   - component: {fileID: 2980128821144292998}
   - component: {fileID: 475337497866183416}
   - component: {fileID: 7046095213608837442}
+  - component: {fileID: -5967027365589072435}
   m_Layer: 0
   m_Name: Base Unit Prefab
   m_TagString: unit
@@ -309,8 +310,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3737806deb201ac4f8febfcafe623e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHP: 200
   _hp: 200
-  _atk: 10
+  _atk: 100
   _def: 5
   _dodge: 2
   _immunity: 0
@@ -355,6 +357,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _slider: {fileID: 3848438196695275477}
   _text: {fileID: 3029283620742499239}
+--- !u!114 &-5967027365589072435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2191049375474153588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e17fc2427437e3d4d92df0fd69e366c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3914410084728599848
 GameObject:
   m_ObjectHideFlags: 0

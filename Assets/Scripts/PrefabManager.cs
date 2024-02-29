@@ -12,6 +12,7 @@ public class PrefabManager : MonoBehaviour
     private Dictionary<int, Vector3> _redPositionDict;
     private Dictionary<int, Vector3> _bluePositionDict;
 
+
     void Awake() {
         _redPositionDict = new Dictionary<int, Vector3>() {
             {0, new Vector3(0, 2.5f, -40)},
@@ -39,6 +40,7 @@ public class PrefabManager : MonoBehaviour
         for (int i = 0; i < 5; i++) {
             _baseUnit = Instantiate(_baseUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
             _baseUnit.transform.name = $"Red Unit {i + 1}";
+            _baseUnit.GetComponent<Stats>().Team = TeamColor.Red;
             unitMaterial = _baseUnit.GetComponent<Renderer>().material;
             unitMaterial.SetColor("_Color", Color.red);        
         }
@@ -49,7 +51,8 @@ public class PrefabManager : MonoBehaviour
 
         for (int i = 0; i < 5; i++) {
             _baseUnit = Instantiate(_baseUnitPrefab, _bluePositionDict[i], Quaternion.identity, _blueParent.transform);
-            _baseUnit.transform.name = $"Blue {i + 1}";
+            _baseUnit.transform.name = $"Blue Unit {i + 1}";
+            _baseUnit.GetComponent<Stats>().Team = TeamColor.Blue;
             unitMaterial = _baseUnit.GetComponent<Renderer>().material;
             unitMaterial.SetColor("_Color", Color.blue);        
         }
