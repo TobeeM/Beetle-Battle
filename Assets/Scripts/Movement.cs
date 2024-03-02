@@ -40,7 +40,7 @@ public class Movement : MonoBehaviour
         return _availableMoves;
     } 
 
-    public void Move(Vector3 targetCoords, Cell[] cells) {
+    public bool Move(Vector3 targetCoords, Cell[] cells) {
         int unitCoords = CoordinateConverter.ConvertCoordinates((int)transform.position.x, (int)transform.position.z);
         int moveTo = CoordinateConverter.ConvertCoordinates((int)targetCoords.x, (int)targetCoords.z);
         Vector3 moveLocation = new Vector3(targetCoords.x, 3, targetCoords.z);
@@ -49,7 +49,12 @@ public class Movement : MonoBehaviour
             int finalMove = unitCoords + move;
             Cell cell = cells[finalMove];
             
-            if (finalMove == moveTo && !cell.IsOccupied) transform.position = moveLocation;
+            if (finalMove == moveTo && !cell.IsOccupied) {
+                transform.position = moveLocation;
+                return true;
+            }
         }
+
+        return false;
     }
 }

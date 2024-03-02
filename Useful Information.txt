@@ -1,1 +1,9 @@
-Shift + Alt + A => Comment a block of code
+SHORTCUTS:
+
+1) Shift + Alt + A => Comment a block of code
+
+TO DO LIST:
+
+1) Make it so game over check is checked after the _onUnitAttacked event
+2) Start developing other types of units
+3) Fix cell highlight under allied units

@@ -20,8 +20,9 @@ public class Stats : MonoBehaviour
     [SerializeField] private int _durability; // increases chance to dodge SNAIL and CANNON specials (in %)
     [SerializeField] private int _clarity; // increases chance to dodge FAIRY and DRAGONFLY specials (in %)
 
-    [Header("Team")]
+    [Header("Extra Variables")]
     private TeamColor _team;
+    private bool _isKing;
 
     public int Hp {
         get => _hp;
@@ -34,6 +35,11 @@ public class Stats : MonoBehaviour
     public TeamColor Team {
         get => _team;
         set => _team = value;
+    }
+
+    public bool IsKing {
+        get => _isKing;
+        set => _isKing = value;
     }
 }
 
