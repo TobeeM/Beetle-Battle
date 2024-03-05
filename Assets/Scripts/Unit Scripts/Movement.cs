@@ -41,8 +41,8 @@ public class Movement : MonoBehaviour
     } 
 
     public bool Move(Vector3 targetCoords, Cell[] cells) {
-        int unitCoords = CoordinateConverter.ConvertCoordinates((int)transform.position.x, (int)transform.position.z);
-        int moveTo = CoordinateConverter.ConvertCoordinates((int)targetCoords.x, (int)targetCoords.z);
+        int unitCoords = CoordinateConverter.Convert((int)transform.position.x, (int)transform.position.z);
+        int moveTo = CoordinateConverter.Convert((int)targetCoords.x, (int)targetCoords.z);
         Vector3 moveLocation = new Vector3(targetCoords.x, 3, targetCoords.z);
 
         foreach (int move in _availableMoves) {

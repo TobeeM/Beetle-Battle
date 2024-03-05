@@ -8,6 +8,6 @@ public class ObjectClicker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 }

@@ -5,5 +5,7 @@ SHORTCUTS:
 TO DO LIST:
 
 1) Make it so game over check is checked after the _onUnitAttacked event
-2) Start developing other types of units
-3) Fix cell highlight under allied units
+2) Fix cell highlight under allied units
+3) Fix attack highlight not returning move cells's highlights to its original values
+4) Create _onUnitDied event
+5) Deoccupy cell after _onUnitDied event

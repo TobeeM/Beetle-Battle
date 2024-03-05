@@ -1079,7 +1079,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Stats
+  m_text: Special
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -1302,7 +1302,7 @@ GameObject:
   - component: {fileID: 280386628}
   - component: {fileID: 280386627}
   m_Layer: 5
-  m_Name: Stats Button
+  m_Name: Special Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1371,7 +1371,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 280386628}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1325642135}
+        m_TargetAssemblyTypeName: BoardManager, Assembly-CSharp
+        m_MethodName: AttackButton
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &280386628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4570,8 +4582,12 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _onGameOver:
+    m_PersistentCalls:
+      m_Calls: []
   _attackButton: {fileID: 1724759552}
   _skipTurnButton: {fileID: 1334965772}
+  _specialAttackButton: {fileID: 280386627}
 --- !u!114 &1325642136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4603,6 +4619,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseUnitPrefab: {fileID: 2191049375474153588, guid: 87f69a43054190d4ab7033b72623691e,
+    type: 3}
+  _beeUnitPrefab: {fileID: 2191049375474153588, guid: 9a1b2de08a9eee44eb8f45ea2b58f6f1,
     type: 3}
   _redParent: {fileID: 567975986}
   _blueParent: {fileID: 49368466}
@@ -4692,18 +4710,6 @@ MonoBehaviour:
       - m_Target: {fileID: 1325642135}
         m_TargetAssemblyTypeName: BoardManager, Assembly-CSharp
         m_MethodName: SkipTurnButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1325642135}
-        m_TargetAssemblyTypeName: BoardManager, Assembly-CSharp
-        m_MethodName: DetermineTurnCompletionV2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6335,7 +6341,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1325642135}
         m_TargetAssemblyTypeName: BoardManager, Assembly-CSharp
         m_MethodName: AttackButton
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

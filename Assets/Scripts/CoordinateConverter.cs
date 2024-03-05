@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine;
 
 public static class CoordinateConverter
 {
@@ -55,7 +52,7 @@ public static class CoordinateConverter
         };
     }
 
-    public static int ConvertCoordinates(int x, int z) {
+    public static int Convert(int x, int z) {
         return _unityToArrayCoordinates[(x, z)];
     }
 }

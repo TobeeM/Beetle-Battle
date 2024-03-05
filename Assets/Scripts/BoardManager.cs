@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -18,8 +14,8 @@ public class BoardManager : MonoBehaviour
     private GameObject _currentUnit;
     private GameObject _clickedEnemyUnit;
     private GameObject _clickedObject;
-    private List<int> _availableMoves;
-    private List<int> _availableAttacks;
+    private List<Vector2Int> _availableMoves;
+    private List<Vector2Int> _availableAttacks;
     private bool _isUnitMoving;
     private bool _isYourTurn;
     private int _turnCount;
@@ -51,7 +47,7 @@ public class BoardManager : MonoBehaviour
 
     void Awake() {
         _boardCamera = Camera.main;
-        _availableMoves = new List<int>();
+        _availableMoves = new List<Vector2Int>();
         _turnCount = 1;
         _board = GameObject.FindGameObjectsWithTag("cell").OrderBy(cell => int.Parse(cell.name)).ToArray();
         _cells = new Cell[_board.Length];
@@ -84,7 +80,7 @@ public class BoardManager : MonoBehaviour
             int x = (int)unit.transform.position.x;
             int z = (int)unit.transform.position.z;
 
-            _cells[CoordinateConverter.ConvertCoordinates(x, z)].Occupy();
+            _cells[CoordinateConverter.Convert(x, z)].Occupy();
             _redUnitsState.Add(unit.GetComponent<UnitState>());
         }
 
@@ -92,7 +88,7 @@ public class BoardManager : MonoBehaviour
             int x = (int)unit.transform.position.x;
             int z = (int)unit.transform.position.z;
 
-            _cells[CoordinateConverter.ConvertCoordinates(x, z)].Occupy();
+            _cells[CoordinateConverter.Convert(x, z)].Occupy();
             _blueUnitsState.Add(unit.GetComponent<UnitState>());
         }
 
@@ -126,21 +122,21 @@ public class BoardManager : MonoBehaviour
             // Current Unit movement.
             if (_clickedObject && _clickedObject.CompareTag("cell") && _currentUnit && _isYourTurn && !_isAttackInitiated &&
             !_currentUnit.GetComponent<UnitState>().HasMoved) {
-                Vector3 moveLocation = new Vector3(_clickedObject.transform.position.x, 3, 
-                _clickedObject.transform.position.z); 
+                Vector3 moveLocation = new Vector3(_clickedObject.transform.position.x, 3, _clickedObject.transform.position.z); 
                 UnhighlightArea();
 
                 int x = (int)_currentUnit.transform.position.x;
                 int z = (int)_currentUnit.transform.position.z;
-                int currentCoords = CoordinateConverter.ConvertCoordinates(x, z);
+                int currentCoords = CoordinateConverter.Convert(x, z);
 
-                bool unitMoved = _currentUnit.GetComponent<Movement>().Move(moveLocation, _cells);
+                bool unitMoved = _currentUnit.GetComponent<MovementBase>().Move(
+                    moveLocation, _cells[CoordinateConverter.Convert((int)moveLocation.x, (int)moveLocation.z)]);
 
                 if (unitMoved) {
                     _cells[currentCoords].Deoccupy();
                     x = (int)_currentUnit.transform.position.x;
                     z = (int)_currentUnit.transform.position.z;
-                    currentCoords = CoordinateConverter.ConvertCoordinates(x, z);
+                    currentCoords = CoordinateConverter.Convert(x, z);
                     _cells[currentCoords].Occupy();
                     _currentUnit.GetComponent<UnitState>().HasMoved = true;
                     _onUnitMoved.Invoke();       
@@ -214,11 +210,11 @@ public class BoardManager : MonoBehaviour
     private void HighlightArea() {
         int x = (int)_currentUnit.transform.position.x;
         int z = (int)_currentUnit.transform.position.z;
-        Cell currentCell = _cells[CoordinateConverter.ConvertCoordinates(x, z)];
-        _availableMoves = _currentUnit.GetComponent<Movement>().CalculateAvailableMoves(currentCell);
+        Cell currentCell = _cells[CoordinateConverter.Convert(x, z)];
+        _availableMoves = _currentUnit.GetComponent<MovementBase>().CalculateAvailableMoves(currentCell);
 
-        foreach (int availableMove in _availableMoves) {
-            int i = availableMove + int.Parse(currentCell.name);
+        foreach (Vector2Int availableMove in _availableMoves) {
+            int i = CoordinateConverter.Convert(availableMove.x, availableMove.y);
             Cell cell = _cells[i];
             CellHightlight cellHighlight = _ch[i];
 
@@ -230,13 +226,13 @@ public class BoardManager : MonoBehaviour
     public void HighlightAttackArea(bool isSpecial) {
         int x = (int)_currentUnit.transform.position.x;
         int z = (int)_currentUnit.transform.position.z;
-        Cell currentCell = _cells[CoordinateConverter.ConvertCoordinates(x, z)];
+        Cell currentCell = _cells[CoordinateConverter.Convert(x, z)];
 
-        if (isSpecial) _availableAttacks = _currentUnit.GetComponent<SpecialAttack>().CalculateAvailableSpecials(currentCell);
-        else _availableAttacks = _currentUnit.GetComponent<Attack>().CalculateAvailableAttacks(currentCell);
+        if (isSpecial) _availableAttacks = _currentUnit.GetComponent<SpecialBase>().CalculateAvailableSpecials(currentCell);
+        else _availableAttacks = _currentUnit.GetComponent<AttackBase>().CalculateAvailableAttacks(currentCell);
 
-        foreach (int availableAttack in _availableAttacks) {
-            int i = availableAttack + int.Parse(currentCell.name);
+        foreach (Vector2Int attack in _availableAttacks) {
+            int i = CoordinateConverter.Convert(attack.x, attack.y);
             Cell cell = _cells[i];
             CellHightlight cellHighlight = _ch[i];
 
@@ -245,24 +241,9 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    // Unhighlights area around current unit (returns cells' colors to its original values).
+    // Paints all cells to its original colors.
     private void UnhighlightArea() {
-        foreach (CellHightlight ch in _ch) {
-            ch.PaintCellToOriginalColor();
-        }
-    }
-
-    // Unhighlights area around current unit (returns cells' colors to its original values).
-    private void UnhighlightAttackArea() {
-        int x = (int)_currentUnit.transform.position.x;
-        int z = (int)_currentUnit.transform.position.z;
-
-        Cell currentCell = _cells[CoordinateConverter.ConvertCoordinates(x, z)];
-        _availableAttacks = _currentUnit.GetComponent<Attack>().CalculateAvailableAttacks(currentCell);
-
-        foreach (int availableAttack in _availableAttacks) {
-            _ch[availableAttack + int.Parse(currentCell.name)].PaintCellToOriginalColor();
-        }
+        foreach (CellHightlight ch in _ch) ch.PaintCellToOriginalColor();
     }
 
     // Moves unit to a new location over a period of time.
@@ -325,6 +306,7 @@ public class BoardManager : MonoBehaviour
     private IEnumerator WaitForAttack(bool isSpecial) {
         Debug.Log("Coroutine is now running!");
         bool unitAttacked = false;
+        UnhighlightArea();
         HighlightAttackArea(isSpecial);
 
         while (!_clickedEnemyUnit) {
@@ -332,8 +314,8 @@ public class BoardManager : MonoBehaviour
                 if (_clickedObject.CompareTag("unit") && 
                 _clickedObject.GetComponent<Stats>().Team != _currentUnit.GetComponent<Stats>().Team) {
                     _clickedEnemyUnit = _clickedObject;
-                    if (isSpecial) unitAttacked = _currentUnit.GetComponent<SpecialAttack>().SpecialAttackUnit(_clickedEnemyUnit);
-                    else unitAttacked = _currentUnit.GetComponent<Attack>().AttackUnit(_clickedEnemyUnit);
+                    if (isSpecial) unitAttacked = _currentUnit.GetComponent<SpecialBase>().SpecialAttackUnit(_clickedEnemyUnit);
+                    else unitAttacked = _currentUnit.GetComponent<AttackBase>().AttackUnit(_clickedEnemyUnit);
 
                     if (unitAttacked) {
                         _currentUnit.GetComponent<UnitState>().HasAttacked = true;
@@ -348,7 +330,7 @@ public class BoardManager : MonoBehaviour
             yield return null;
         }
 
-        UnhighlightAttackArea();
+        UnhighlightArea();
         if (!unitAttacked) _currentUnit.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         _currentUnit = null;
         _clickedEnemyUnit = null;

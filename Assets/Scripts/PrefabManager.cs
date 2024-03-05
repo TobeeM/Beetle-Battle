@@ -5,10 +5,11 @@ using UnityEngine;
 public class PrefabManager : MonoBehaviour
 {
     [SerializeField] private GameObject _baseUnitPrefab;
+    [SerializeField] private GameObject _beeUnitPrefab;
     [SerializeField] private GameObject _redParent;
     [SerializeField] private GameObject _blueParent;
 
-    private GameObject _baseUnit;
+    private GameObject _instantiatedUnit;
     private Dictionary<int, Vector3> _redPositionDict;
     private Dictionary<int, Vector3> _bluePositionDict;
 
@@ -39,20 +40,21 @@ public class PrefabManager : MonoBehaviour
         int kingIndex = Random.Range(0, 5);
 
         for (int i = 0; i < 5; i++) {
-            _baseUnit = Instantiate(_baseUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
+            if (i == 0) _instantiatedUnit = Instantiate(_beeUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
+            else _instantiatedUnit = Instantiate(_baseUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
 
             if (i == kingIndex) {
-                _baseUnit.GetComponent<Stats>().IsKing = true;
-                _baseUnit.transform.name = $"Red King";
-                _baseUnit.GetComponent<Stats>().Team = TeamColor.Red;
-                unitMaterial = _baseUnit.GetComponent<Renderer>().material;
+                _instantiatedUnit.GetComponent<Stats>().IsKing = true;
+                _instantiatedUnit.transform.name = $"Red King";
+                _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Red;
+                unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
                 unitMaterial.SetColor("_Color", Color.yellow);
                 continue;
             }
 
-            _baseUnit.transform.name = $"Red Unit {i + 1}";
-            _baseUnit.GetComponent<Stats>().Team = TeamColor.Red;
-            unitMaterial = _baseUnit.GetComponent<Renderer>().material;
+            _instantiatedUnit.transform.name = $"Red Unit {i + 1}";
+            _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Red;
+            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
             unitMaterial.SetColor("_Color", Color.red);
 
         }
@@ -63,20 +65,20 @@ public class PrefabManager : MonoBehaviour
         int kingIndex = Random.Range(0, 5);
 
         for (int i = 0; i < 5; i++) {
-            _baseUnit = Instantiate(_baseUnitPrefab, _bluePositionDict[i], Quaternion.identity, _blueParent.transform);
+            _instantiatedUnit = Instantiate(_baseUnitPrefab, _bluePositionDict[i], Quaternion.identity, _blueParent.transform);
 
             if (i == kingIndex) {
-                _baseUnit.GetComponent<Stats>().IsKing = true;
-                _baseUnit.transform.name = $"Blue King";
-                _baseUnit.GetComponent<Stats>().Team = TeamColor.Blue;
-                unitMaterial = _baseUnit.GetComponent<Renderer>().material;
+                _instantiatedUnit.GetComponent<Stats>().IsKing = true;
+                _instantiatedUnit.transform.name = $"Blue King";
+                _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Blue;
+                unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
                 unitMaterial.SetColor("_Color", Color.cyan);
                 continue;
             }
 
-            _baseUnit.transform.name = $"Blue Unit {i + 1}";
-            _baseUnit.GetComponent<Stats>().Team = TeamColor.Blue;
-            unitMaterial = _baseUnit.GetComponent<Renderer>().material;
+            _instantiatedUnit.transform.name = $"Blue Unit {i + 1}";
+            _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Blue;
+            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
             unitMaterial.SetColor("_Color", Color.blue);   
         }
     }

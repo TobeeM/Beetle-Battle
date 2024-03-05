@@ -48,8 +48,8 @@ public class Attack : MonoBehaviour
     }
     
     public bool AttackUnit(GameObject enemyUnit) {
-        int enemyCoords = CoordinateConverter.ConvertCoordinates((int)enemyUnit.transform.position.x, (int)enemyUnit.transform.position.z);
-        int unitCoords = CoordinateConverter.ConvertCoordinates((int)transform.position.x, (int)transform.position.z);
+        int enemyCoords = CoordinateConverter.Convert((int)enemyUnit.transform.position.x, (int)enemyUnit.transform.position.z);
+        int unitCoords = CoordinateConverter.Convert((int)transform.position.x, (int)transform.position.z);
 
         foreach (int attack in _availableAttacks) {
             int finalAttack = unitCoords + attack;
