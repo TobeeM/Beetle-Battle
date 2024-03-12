@@ -205,6 +205,7 @@ GameObject:
   - component: {fileID: 6152190032260365937}
   - component: {fileID: 2047259686542454374}
   - component: {fileID: 2217415265099084716}
+  - component: {fileID: 3628702709261030341}
   m_Layer: 0
   m_Name: Bee Unit Prefab
   m_TagString: unit
@@ -380,6 +381,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8c8084738412554f8502835c8161b7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3628702709261030341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2191049375474153588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fab5564b34e70048899524b2f1fdd96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3914410084728599848

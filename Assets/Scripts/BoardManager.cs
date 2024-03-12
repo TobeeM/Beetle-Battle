@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,6 +10,7 @@ using UnityEngine.UI;
 public class BoardManager : MonoBehaviour
 {
     private GameObject[] _board;
+    private GameObject[] _boardHighlight;
     private Cell[] _cells;
     private CellHightlight[] _ch;
 
@@ -20,6 +23,7 @@ public class BoardManager : MonoBehaviour
     private bool _isYourTurn;
     private int _turnCount;
     private Camera _boardCamera;
+    private CameraControl _camControl;
     private bool _isAttackInitiated;
 
     private List<GameObject> _redUnits;
@@ -34,10 +38,11 @@ public class BoardManager : MonoBehaviour
     public int TurnCount => _turnCount;
     public bool IsYourTurn => _isYourTurn;
 
+    public static event Action OnTurnOver;
+
     [Header("Unity Events")]
     [SerializeField] private UnityEvent _onUnitMoved;
     [SerializeField] private UnityEvent _onUnitAttacked;
-    [SerializeField] private UnityEvent _onTurnOver;
     [SerializeField] private UnityEvent _onGameOver;
 
     [Header("Buttons")]
@@ -47,16 +52,18 @@ public class BoardManager : MonoBehaviour
 
     void Awake() {
         _boardCamera = Camera.main;
+        _camControl = Camera.main.GetComponent<CameraControl>();
         _availableMoves = new List<Vector2Int>();
         _turnCount = 1;
         _board = GameObject.FindGameObjectsWithTag("cell").OrderBy(cell => int.Parse(cell.name)).ToArray();
+        _boardHighlight = GameObject.FindGameObjectsWithTag("cellHighlight").OrderBy(cell => int.Parse(cell.name)).ToArray();
         _cells = new Cell[_board.Length];
         _ch = new CellHightlight[_board.Length];
         _isYourTurn = true;
 
         for (int i = 0; i < _cells.Length; i++) {
             _cells[i] = _board[i].GetComponent<Cell>();
-            _ch[i] = _board[i].GetComponent<CellHightlight>();
+            _ch[i] = _boardHighlight[i].GetComponent<CellHightlight>();
         }
 
         Debug.Log("Press 1 to check units' states.");
@@ -108,6 +115,7 @@ public class BoardManager : MonoBehaviour
             if (_clickedObject && !_clickedObject.CompareTag("cell") && _clickedObject.GetComponent<Stats>().Team == TeamColor.Red && !_isAttackInitiated) {
                 UnhighlightArea();
                 _currentUnit = _clickedObject;
+                //_camControl.MoveCameraToCurrentUnit(_currentUnit);
 
                 if (!_currentUnit.GetComponent<UnitState>().HasFinishedTurn()) {
                     _currentUnit.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
@@ -116,7 +124,9 @@ public class BoardManager : MonoBehaviour
                     _specialAttackButton.interactable = true;
                     if (!_currentUnit.GetComponent<UnitState>().HasMoved) HighlightArea();
                 }
-                else _currentUnit = null;
+                else {
+                    _currentUnit = null;
+                }
             }
 
             // Current Unit movement.
@@ -147,6 +157,7 @@ public class BoardManager : MonoBehaviour
                 _skipTurnButton.interactable = false;
                 _specialAttackButton.interactable = false;
                 DetermineTurnCompletion();
+                //_camControl.ChangeCameraViewToDefault();
             }
         }
 
@@ -162,7 +173,7 @@ public class BoardManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) {
             _isYourTurn = true;
             _turnCount++;
-            _onTurnOver.Invoke();
+            OnTurnOver?.Invoke();
             foreach (UnitState us in _redUnitsState) us.ResetUnitState();
             foreach (GameObject unit in _redUnits) {
                 unit.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
@@ -173,21 +184,16 @@ public class BoardManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3)) {
             _isYourTurn = false;
             _turnCount++;
-            _onTurnOver.Invoke();
+            OnTurnOver?.Invoke();
             foreach (UnitState us in _redUnitsState) us.HasMoved = true;
         }
 
         // Debug Button 4
-        if (Input.GetKeyDown(KeyCode.Q)) {
-            _boardCamera.transform.position = new Vector3(0, 90, -10);
-            _boardCamera.transform.rotation = Quaternion.Euler(90, 0, 0);
-        }
+        if (Input.GetKeyDown(KeyCode.Q)) _camControl.ChangeCameraViewToTopDown();
 
         // Debug Button 5
-        if (Input.GetKeyDown(KeyCode.W)) {
-            _boardCamera.transform.position = new Vector3(0, 35, -70);
-            _boardCamera.transform.rotation = Quaternion.Euler(40, 0, 0);
-        }
+        if (Input.GetKeyDown(KeyCode.W)) _camControl.ChangeCameraViewToDefault();
+
     }
 
     private void OnGameStateChanged(GameState gameState) {
@@ -270,10 +276,11 @@ public class BoardManager : MonoBehaviour
         if (unitCount == unitsCompletedTurn) {
             _isYourTurn = false;
             _turnCount++;
-            _onTurnOver.Invoke();
+            OnTurnOver?.Invoke();
         }
     }
 
+    // Determines whether the game was finished.
     public void DetermineGameOver() {
         if (_redUnits.Count == 0 || _blueUnits.Count == 0 || !_blueKing || !_redKing) {
             _onGameOver.Invoke();
@@ -298,7 +305,6 @@ public class BoardManager : MonoBehaviour
             _isAttackInitiated = true;
             StartCoroutine(WaitForAttack(isSpecial));
             DetermineTurnCompletion();
-            DetermineGameOver();
         }
     }
 
@@ -320,10 +326,10 @@ public class BoardManager : MonoBehaviour
                     if (unitAttacked) {
                         _currentUnit.GetComponent<UnitState>().HasAttacked = true;
                         _currentUnit.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
-                        _clickedEnemyUnit.GetComponent<Health>().CalculateHealth(_clickedEnemyUnit.
-                        GetComponent<Stats>().Team == TeamColor.Red ? _redUnits : _blueUnits);
+                        _clickedEnemyUnit.GetComponent<Health>().CalculateHealth();
                         _onUnitAttacked.Invoke();
                     }
+                    break;
                 }
                 else break;
             }
@@ -343,5 +349,23 @@ public class BoardManager : MonoBehaviour
 
     void OnDestroy() {
         //GameManager.OnGameStateChanged -= OnGameStateChanged;
+    }
+
+    private void RemoveDeadUnit(GameObject enemyUnit) {
+        int x = (int)enemyUnit.transform.position.x;
+        int z = (int)enemyUnit.transform.position.z;
+        int unitCoords = CoordinateConverter.Convert(x, z);
+        _cells[unitCoords].Deoccupy();
+        _blueUnits.Remove(enemyUnit);
+        Destroy(enemyUnit);
+        Invoke("DetermineGameOver", 0.1f);
+    }
+
+    void OnEnable() {
+        Health.OnUnitDied += RemoveDeadUnit;
+    }
+
+    void OnDisable() {
+        Health.OnUnitDied -= RemoveDeadUnit;
     }
 }

@@ -12,6 +12,7 @@ public class Health : MonoBehaviour
     [SerializeField] private Slider _slider;
     [SerializeField] private TextMeshProUGUI _text;
     private Stats _stats;
+    public static event Action<GameObject> OnUnitDied;
 
     void Awake() {
         _stats = GetComponent<Stats>();
@@ -21,16 +22,17 @@ public class Health : MonoBehaviour
     }
 
     void Start() {
-        CalculateHealth(new List<GameObject>());
+        CalculateHealth();
     }
 
-    public void CalculateHealth(List<GameObject> units) {
+    public void CalculateHealth() {
         _slider.value = _stats.Hp;
         _text.text = $"{_stats.Hp} / {_slider.maxValue}";
 
         if (_stats.Hp <= 0) {
-            units.Remove(gameObject);
-            Destroy(gameObject, 0.5f);
+            _stats.Hp = 0;
+            Debug.Log($"{gameObject.name} has died!");
+            OnUnitDied?.Invoke(gameObject);
         }
     }
 }

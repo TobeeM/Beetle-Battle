@@ -36,7 +36,6 @@ public abstract class AttackBase : MonoBehaviour
                 _availableAttacks.Add(new Vector2Int(finalX, finalY));
         }
 
-        foreach (var attack in _availableAttacks) Debug.Log(attack);
         return _availableAttacks;
     }
 
@@ -46,6 +45,13 @@ public abstract class AttackBase : MonoBehaviour
         foreach (Vector2Int attack in _availableAttacks) {
             if (attack == enemyCoords) {
                 Stats enemyStats = enemyUnit.GetComponent<Stats>();
+                bool unitDodged = Random.Range(0, 101) > enemyStats.Dodge ? false : true;
+                
+                if (unitDodged) {
+                    Debug.Log($"{enemyUnit.name} dodged the attack.");
+                    return true;
+                }
+
                 int totalDamage = _atk - enemyStats.Def > 0 ? _atk - enemyStats.Def : 0;
                 enemyStats.Hp -= totalDamage;
                 Debug.Log($"{transform.name} attacked {enemyUnit.transform.name} for {totalDamage} damage.");

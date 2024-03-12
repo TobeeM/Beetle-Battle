@@ -4,8 +4,7 @@ SHORTCUTS:
 
 TO DO LIST:
 
-1) Make it so game over check is checked after the _onUnitAttacked event
-2) Fix cell highlight under allied units
-3) Fix attack highlight not returning move cells's highlights to its original values
-4) Create _onUnitDied event
-5) Deoccupy cell after _onUnitDied event
+1) Add visual indicators over units' nameplates to show if unit completed turn or is affected by any status
+2) Add more unit types
+3) Fix attack exception when attacking outside of board's area
+4) Implement leveling system and game loop

@@ -24,7 +24,7 @@ public class UnitState : MonoBehaviour
     }
 
     public bool HasFinishedTurn() {
-        return _hasMoved || _hasAttacked || _hasSkipped;
+        return _hasAttacked || _hasSkipped;
     }
 
     public void ResetUnitState() {

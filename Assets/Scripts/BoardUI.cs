@@ -14,12 +14,14 @@ public class BoardUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _blueTMP;
     [SerializeField] private TextMeshProUGUI _turnCountTMP;
     [SerializeField] private TextMeshProUGUI _gameStateTMP;
-    [SerializeField] private GameObject _redHealthbars;
-    [SerializeField] private GameObject _blueHealthbars;
+    [SerializeField] private GameObject _redHealthbarsObject;
+    [SerializeField] private GameObject _blueHealthbarsObject;
 
     private BoardManager _bm;
     private List<GameObject> _redUnits;
     private List<GameObject> _blueUnits;
+    private List<GameObject> _redHealthbars = new List<GameObject>();
+    private List<GameObject> _blueHealthbars = new List<GameObject>();
     private List<UnityEngine.UI.Image> _redHealthbarsImage = new List<UnityEngine.UI.Image>();
     private List<UnityEngine.UI.Image> _blueHealthbarsImage = new List<UnityEngine.UI.Image>();
 
@@ -29,8 +31,11 @@ public class BoardUI : MonoBehaviour
         _blueUnits = _bm.BlueUnits;
         
         for (int i = 0; i < 5; i++) {
-            _redHealthbarsImage.Add(_redHealthbars.transform.GetChild(i).GetComponent<UnityEngine.UI.Image>());
-            _blueHealthbarsImage.Add(_blueHealthbars.transform.GetChild(i).GetComponent<UnityEngine.UI.Image>());
+            _redHealthbars.Add(_redHealthbarsObject.transform.GetChild(i).gameObject);
+            _redHealthbarsImage.Add(_redHealthbars[i].GetComponent<UnityEngine.UI.Image>());
+
+            _blueHealthbars.Add(_blueHealthbarsObject.transform.GetChild(i).gameObject);
+            _blueHealthbarsImage.Add(_blueHealthbars[i].GetComponent<UnityEngine.UI.Image>());
         }
 
         _turnCountTMP.text = $"Current Turn: {_bm.TurnCount}";
@@ -56,6 +61,7 @@ public class BoardUI : MonoBehaviour
 
     public void UpdateTurnCount() {
         _turnCountTMP.text = $"Current Turn: {_bm.TurnCount}";
+
         if (_bm.IsYourTurn) {
             _gameStateTMP.color = Color.red;
             _gameStateTMP.text = "Your turn";
@@ -64,5 +70,19 @@ public class BoardUI : MonoBehaviour
             _gameStateTMP.color = Color.blue;
             _gameStateTMP.text = "Enemy turn";
         }
+    }
+
+    private void RemoveHealthBar(GameObject attackedUnit) {
+        // TO BE IMPLEMENTED
+    }
+
+    void OnEnable() {
+        Health.OnUnitDied += RemoveHealthBar;
+        BoardManager.OnTurnOver += UpdateTurnCount;
+    }
+
+    void OnDisable() {
+        Health.OnUnitDied -= RemoveHealthBar;
+        BoardManager.OnTurnOver -= UpdateTurnCount;
     }
 }
