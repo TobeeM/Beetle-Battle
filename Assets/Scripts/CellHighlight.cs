@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CellHightlight : MonoBehaviour
@@ -8,23 +5,15 @@ public class CellHightlight : MonoBehaviour
     private Material _material;
     private Color _defaultColor;
     private Color _darkRed;
+    private Color _darkGreen;
 
     void Awake()
     {
         _material = GetComponent<Renderer>().material;
         _defaultColor = GetComponent<Renderer>().material.color;
         _darkRed = new Color(0.5f, 0, 0);
+        _darkGreen = new Color(0, 0.4f, 0);
     }
-
-    /*
-    private void OnMouseEnter() {
-        _material.SetColor("_Color", Color.blue);
-    }
-
-    private void OnMouseExit() {
-        _material.SetColor("_Color", _defaultColor);
-    }
-    */
 
     public void PaintMoveCell() {
         _material.SetColor("_Color", Color.green);
@@ -38,11 +27,15 @@ public class CellHightlight : MonoBehaviour
         _material.SetColor("_Color", _darkRed);
     }
 
-    public void PaintCellToOriginalColor() {
-        _material.SetColor("_Color", _defaultColor);
+    public void PaintPositioningCell() {
+        _material.SetColor("_Color", _darkGreen);
     }
 
-    public void DebugPaint() {
+    public void PaintEnchantOccupiedCell() {
         _material.SetColor("_Color", Color.blue);
+    }
+
+    public void PaintCellToOriginalColor() {
+        _material.SetColor("_Color", _defaultColor);
     }
 }

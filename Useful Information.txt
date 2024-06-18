@@ -1,10 +1,3 @@
 SHORTCUTS:
 
 1) Shift + Alt + A => Comment a block of code
-
-TO DO LIST:
-
-1) Add visual indicators over units' nameplates to show if unit completed turn or is affected by any status
-2) Add more unit types
-3) Fix attack exception when attacking outside of board's area
-4) Implement leveling system and game loop

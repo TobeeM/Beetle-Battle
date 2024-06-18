@@ -55,4 +55,9 @@ public static class CoordinateConverter
     public static int Convert(int x, int z) {
         return _unityToArrayCoordinates[(x, z)];
     }
+
+    public static (int, int) GetKeyFromValue(int value) {
+        foreach (var keyVar in _unityToArrayCoordinates.Keys) if (_unityToArrayCoordinates[keyVar] == value) return keyVar;
+        return default;
+    }
 }

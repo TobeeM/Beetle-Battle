@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UnitStatus : MonoBehaviour
@@ -15,7 +16,9 @@ public class UnitStatus : MonoBehaviour
     }
 
     public void ApplyStatus(StatusType status, int statusDuration, int statusDamage) {
-        foreach (StatusType statusType in _currentStatuses) if (statusType == StatusType.Poisoned) return;
+        foreach (StatusType statusType in _currentStatuses) {
+            if (statusType == StatusType.Poisoned || statusType == StatusType.Dazed || statusType == StatusType.Immobilized) return;
+        }
 
         _currentStatuses.Add(status);
         _statusDurations.Add(statusDuration);
@@ -23,8 +26,11 @@ public class UnitStatus : MonoBehaviour
     }
 
     private void DecreaseStatusDuration() {
-        if (_currentStatuses.Count > 0) 
-            Debug.Log($"{transform.name} is {_currentStatuses[0]} for {_statusDurations[0]} more turn(s).");
+        if (_statusDurations.Count == 0) return;
+
+        if (_currentStatuses.Count > 0) {
+            for (int i = 0; i < _currentStatuses.Count; i++) Debug.Log($"{transform.name} is {_currentStatuses[i]} for {_statusDurations[i]} more turn(s).");
+        }
 
         for (int i = 0; i < _statusDurations.Count; i++) {
             if (_currentStatuses[i] == StatusType.Poisoned) {
@@ -52,5 +58,7 @@ public class UnitStatus : MonoBehaviour
 }
 
 public enum StatusType {
-    Poisoned
+    Poisoned,
+    Dazed,
+    Immobilized
 }

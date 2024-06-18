@@ -6,30 +6,40 @@ public class PrefabManager : MonoBehaviour
 {
     [SerializeField] private GameObject _baseUnitPrefab;
     [SerializeField] private GameObject _beeUnitPrefab;
+    [SerializeField] private GameObject _cannonUnitPrefab;
+    [SerializeField] private GameObject _mantisUnitPrefab;
+    [SerializeField] private GameObject _dragonflyUnitPrefab;
+    [SerializeField] private GameObject _spiderUnitPrefab;
+    [SerializeField] private GameObject _snailUnitPrefab;
+    [SerializeField] private GameObject _grasshopperUnitPrefab;
     [SerializeField] private GameObject _redParent;
     [SerializeField] private GameObject _blueParent;
 
     private GameObject _instantiatedUnit;
     private Dictionary<int, Vector3> _redPositionDict;
     private Dictionary<int, Vector3> _bluePositionDict;
+    private GameObject[] _unitTypes;
 
 
     void Awake() {
         _redPositionDict = new Dictionary<int, Vector3>() {
-            {0, new Vector3(0, 2.5f, -40)},
-            {1, new Vector3(0, 2.5f, -30)},
-            {2, new Vector3(10, 2.5f, -30)},
-            {3, new Vector3(20, 2.5f, -30)},
-            {4, new Vector3(10, 2.5f, -40)},
+            {0, new Vector3(200, 2.5f, -40)},
+            {1, new Vector3(200, 2.5f, -30)},
+            {2, new Vector3(200, 2.5f, -30)},
+            {3, new Vector3(200, 2.5f, -30)},
+            {4, new Vector3(200, 2.5f, -40)},
         };
 
         _bluePositionDict = new Dictionary<int, Vector3>() {
-            {0, new Vector3(0, 2.5f, 20)},
-            {1, new Vector3(10, 2.5f, 10)},
-            {2, new Vector3(20, 2.5f, 0)},
-            {3, new Vector3(20, 2.5f, 20)},
-            {4, new Vector3(-20, 2.5f, 20)},
+            {0, new Vector3(200, 2.5f, 20)},
+            {1, new Vector3(200, 2.5f, 10)},
+            {2, new Vector3(200, 2.5f, 0)},
+            {3, new Vector3(200, 2.5f, 20)},
+            {4, new Vector3(200, 2.5f, 20)},
         };
+
+        _unitTypes = new GameObject[8] { _baseUnitPrefab, _beeUnitPrefab, _cannonUnitPrefab, _mantisUnitPrefab,
+            _dragonflyUnitPrefab, _spiderUnitPrefab, _snailUnitPrefab, _grasshopperUnitPrefab };
 
         InstantiateRedUnits();
         InstantiateBlueUnits();
@@ -37,49 +47,75 @@ public class PrefabManager : MonoBehaviour
 
     private void InstantiateRedUnits() {
         Material unitMaterial;
+        UnitColor unitColor;
+        Stats unitStats;
         int kingIndex = Random.Range(0, 5);
+        int randomType;
+        Quaternion redQuaternion = new Quaternion(0, -90, 0, 1);
 
         for (int i = 0; i < 5; i++) {
-            if (i == 0) _instantiatedUnit = Instantiate(_beeUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
-            else _instantiatedUnit = Instantiate(_baseUnitPrefab, _redPositionDict[i], Quaternion.identity, _redParent.transform);
+            randomType = Random.Range(0, 8);
+            _instantiatedUnit = Instantiate(_unitTypes[randomType], _redPositionDict[i], redQuaternion, _redParent.transform);
+
+            unitStats = _instantiatedUnit.GetComponent<Stats>();
+            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
+            unitColor = _instantiatedUnit.GetComponent<UnitColor>();
+
+            unitStats.Team = TeamColor.Red;
+
+            if (unitStats.Type == UnitType.Spider || unitStats.Type == UnitType.Snail || unitStats.Type == UnitType.Hopper) 
+                _instantiatedUnit.transform.rotation = Quaternion.Euler(new Vector3(-90, 0, 180));
 
             if (i == kingIndex) {
-                _instantiatedUnit.GetComponent<Stats>().IsKing = true;
+                unitStats.IsKing = true;
                 _instantiatedUnit.transform.name = $"Red King";
-                _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Red;
-                unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
                 unitMaterial.SetColor("_Color", Color.yellow);
+                unitColor.SetOriginalColor(Color.yellow);
+                unitColor.SetColorToOriginal();
                 continue;
             }
 
             _instantiatedUnit.transform.name = $"Red Unit {i + 1}";
-            _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Red;
-            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
             unitMaterial.SetColor("_Color", Color.red);
-
+            unitColor.SetOriginalColor(Color.red);
+            unitColor.SetColorToOriginal();
         }
     }
 
     private void InstantiateBlueUnits() {
         Material unitMaterial;
+        UnitColor unitColor;
+        Stats unitStats;
         int kingIndex = Random.Range(0, 5);
+        int randomType;
 
         for (int i = 0; i < 5; i++) {
-            _instantiatedUnit = Instantiate(_baseUnitPrefab, _bluePositionDict[i], Quaternion.identity, _blueParent.transform);
+            randomType = Random.Range(0, 8);
+            _instantiatedUnit = Instantiate(_unitTypes[randomType], _bluePositionDict[i], Quaternion.identity, _blueParent.transform);
+
+            unitStats = _instantiatedUnit.GetComponent<Stats>();
+            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
+            unitColor = _instantiatedUnit.GetComponent<UnitColor>();
+
+            unitStats.Team = TeamColor.Blue;
+
+            if (_instantiatedUnit.TryGetComponent(out SpecialMantis sm)) sm.OverrideSpecialPatternBlue();
+            if (unitStats.Type == UnitType.Spider || unitStats.Type == UnitType.Snail || unitStats.Type == UnitType.Hopper) 
+                _instantiatedUnit.transform.rotation = Quaternion.Euler(new Vector3(-90, 0, 180));
 
             if (i == kingIndex) {
-                _instantiatedUnit.GetComponent<Stats>().IsKing = true;
+                unitStats.IsKing = true;
                 _instantiatedUnit.transform.name = $"Blue King";
-                _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Blue;
-                unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
                 unitMaterial.SetColor("_Color", Color.cyan);
+                unitColor.SetOriginalColor(Color.cyan);
+                unitColor.SetColorToOriginal();
                 continue;
             }
 
             _instantiatedUnit.transform.name = $"Blue Unit {i + 1}";
-            _instantiatedUnit.GetComponent<Stats>().Team = TeamColor.Blue;
-            unitMaterial = _instantiatedUnit.GetComponent<Renderer>().material;
-            unitMaterial.SetColor("_Color", Color.blue);   
+            unitMaterial.SetColor("_Color", Color.blue);
+            unitColor.SetOriginalColor(Color.blue);
+            unitColor.SetColorToOriginal();
         }
     }
 }
